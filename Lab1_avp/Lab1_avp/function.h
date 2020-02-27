@@ -5,13 +5,13 @@
 #include <Windows.h>
 #include <iostream>
 
-#define L 20
-#define M 20
-#define N 20
+#define L 500
+#define M 500
+#define N 500
 
-#define l 64
-#define m 64
-#define n 64
+#define l 4
+#define m 4
+#define n 4
 
 typedef float T;
 
@@ -23,13 +23,13 @@ T**** allocation(int H, int W, int h, int w);
 bool generateValues(T**** matrix, int H, int W, int h, int w);
 
 // перемножение внутренней матрицы с автоматической векторизацией
-T** multiply(T** matrixA, T** matrixB);
+T** multiply(T** matrixA, T** matrixB, T** matrixC);
 
 // перемножение внутренней матрицы без веторизации
-T** multiplyNotVectorized(T** matrixA, T** matrixB);
+T** multiplyNotVectorized(T** matrixA, T** matrixB, T** matrixC);
 
 // хардкор перемножение
-T** multiplySSE(T** matrixA, T** matrixB);
+T** multiplySSE(T** matrixA, T** matrixB, T** matrixC);
 
 // сложение c автоматической векторизацией
 T** addition(T** matrixA, T** matrixB);
@@ -41,7 +41,7 @@ T** additionNotVectorized(T** matrixA, T** matrixB);
 T** additionSSE(T** matrixA, T** matrixB);
 
 // полное перемножение
-T**** fullMultiply(T**** matrixA, T**** matrixB, T** (*mul)(T**, T**), T** (*add)(T**, T**));
+T**** fullMultiply(T**** matrixA, T**** matrixB, T**** matrixC , T** (*mul)(T**, T**, T**), T** (*add)(T**, T**));
 
 // сравнение
 bool equals(T** matrixA, T** matrixB);

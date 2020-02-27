@@ -43,16 +43,10 @@ bool generateValues(T**** matrix, int H, int W, int h, int w) {
 }
 
 // перемножение внутренней матрицы с автоматической векторизацией
-T** multiply(T** matrixA, T** matrixB) {
-	T** matrixC = nullptr;
+T** multiply(T** matrixA, T** matrixB, T** matrixC) {
 	T* __restrict tempС = nullptr;
 	T* __restrict tempB = nullptr;
 
-	matrixC = new T * [l];
-	for (int i = 0; i < l; i++) {
-		matrixC[i] = new T[n];
-		ZeroMemory(matrixC[i], sizeof(T) * n);
-	}
 
 	// непосредственно перемножение 
 	for (int i = 0; i < l; i++) {
@@ -73,16 +67,10 @@ T** multiply(T** matrixA, T** matrixB) {
 }
 
 // перемножение внутренней матрицы без веторизации
-T** multiplyNotVectorized(T** matrixA, T** matrixB) {
-	T** matrixC = nullptr;
+T** multiplyNotVectorized(T** matrixA, T** matrixB, T** matrixC) {
 	T* __restrict tempС = nullptr;
 	T* __restrict tempB = nullptr;
 
-	matrixC = new T * [l];
-	for (int i = 0; i < l; i++) {
-		matrixC[i] = new T[n];
-		ZeroMemory(matrixC[i], sizeof(T) * n);
-	}
 
 	for (int i = 0; i < l; i++) {
 		tempС = matrixC[i];
@@ -101,8 +89,7 @@ T** multiplyNotVectorized(T** matrixA, T** matrixB) {
 }
 
 // хардкор перемножение
-T** multiplySSE(T** matrixA, T** matrixB){
-	T** matrixC = nullptr;
+T** multiplySSE(T** matrixA, T** matrixB, T** matrixC){
 	T tempA = 0;
 	T* tempB = nullptr;
 	T* tempC = nullptr;
@@ -111,11 +98,6 @@ T** multiplySSE(T** matrixA, T** matrixB){
 	__m128 reg1;
 	__m128 reg2;
 
-	matrixC = new T * [l];
-	for (int i = 0; i < l; i++) {
-		matrixC[i] = new T[n];
-		ZeroMemory(matrixC[i], sizeof(T) * n);
-	}
 
 	for (int i = 0; i < l; i++)
 	{
@@ -192,26 +174,10 @@ T** additionNotVectorized(T** matrixA, T** matrixB)
 }
 
 // полное перемножение
-T**** fullMultiply(T**** matrixA, T**** matrixB, T** (*mul)(T**, T**), T** (*add)(T**, T**))
+T**** fullMultiply(T**** matrixA, T**** matrixB, T****matrixC, T** (*mul)(T**, T**, T**), T** (*add)(T**, T**))
 {
-	T**** matrixC = nullptr;
 	T*** __restrict tempС = nullptr;
 	T*** __restrict tempB = nullptr;
-
-	matrixC = new T*** [L];
-	for (int i = 0; i < L; i++) {
-
-		matrixC[i] = new T * *[N];
-		for (int j = 0; j < N; j++) {
-
-			matrixC[i][j] = new T * [l];
-			for (int k = 0; k < l; k++) {
-
-				matrixC[i][j][k] = new T[n];
-				ZeroMemory(matrixC[i][j][k], sizeof(T) * n);
-			}
-		}
-	}
 
 
 	for (int i = 0; i < L; i++) {
@@ -220,7 +186,7 @@ T**** fullMultiply(T**** matrixA, T**** matrixB, T** (*mul)(T**, T**), T** (*add
 		{
 			tempB = matrixB[j];
 			for (int k = 0; k < N; k++) {
-				add(tempС[k], mul(matrixA[i][j], tempB[k]));
+				add(tempС[k], mul(matrixA[i][j], tempB[k], matrixC[i][j]));
 			}
 		}
 

@@ -16,29 +16,33 @@ int main() {
 	ULONGLONG resultNotVectorized;
 	ULONGLONG resultSSE;
 
+	T**** matrixC1 = allocation(L, N, l, n);
+	T**** matrixC2 = allocation(L, N, l, n);
+	T**** matrixC3 = allocation(L, N, l, n);
+	
 	startTime = GetTickCount64();
-	T**** matrixC1 = fullMultiply(matrixA, matrixB, multiply, addition);
+	fullMultiply(matrixA, matrixB, matrixC1, multiply, addition);
 	endTime = GetTickCount64();
 
 	resultWithVectrorized = endTime - startTime;
 	
 	startTime = GetTickCount64();
-	T**** matrixC2 = fullMultiply(matrixA, matrixB, multiplyNotVectorized, additionNotVectorized);
+	fullMultiply(matrixA, matrixB, matrixC2, multiplyNotVectorized, additionNotVectorized);
 	endTime = GetTickCount64();
 
 	resultNotVectorized = endTime - startTime;
 
 	startTime = GetTickCount64();
-	T**** matrixC3 = fullMultiply(matrixA, matrixB, multiplySSE, additionSSE);
+	fullMultiply(matrixA, matrixB, matrixC3, multiplySSE, additionSSE);
 	endTime = GetTickCount64();
 
 	resultSSE = endTime - startTime;
 
 	if (equals(matrixC2, matrixC3)) {
-		std::cout << true << std::endl;
+		std::cout << "Матрицы равны" << std::endl;
 	}
 	else {
-		std::cout << false << std::endl;
+		std::cout << "Матрицы не равны"<< std::endl;
 	}
 
 	std::cout << "Время с векторизацией: " << resultWithVectrorized << "." << std::endl;
