@@ -12,9 +12,9 @@ int main() {
 	ULONGLONG startTime;
 	ULONGLONG endTime;
 
-	ULONGLONG resultWithVectrorized;
-	ULONGLONG resultNotVectorized;
-	ULONGLONG resultSSE;
+	ULONGLONG resultTimeWithVectorization;
+	ULONGLONG resultTimeWithoutVectorization;
+	ULONGLONG resultTimeUsingSSE;
 
 	T**** matrixC1 = allocation(L, N, l, n);
 	T**** matrixC2 = allocation(L, N, l, n);
@@ -24,19 +24,19 @@ int main() {
 	fullMultiply(matrixA, matrixB, matrixC1, multiply, addition);
 	endTime = GetTickCount64();
 
-	resultWithVectrorized = endTime - startTime;
+	resultTimeWithVectorization = endTime - startTime;
 	
 	startTime = GetTickCount64();
 	fullMultiply(matrixA, matrixB, matrixC2, multiplyNotVectorized, additionNotVectorized);
 	endTime = GetTickCount64();
 
-	resultNotVectorized = endTime - startTime;
+	resultTimeWithoutVectorization = endTime - startTime;
 
 	startTime = GetTickCount64();
 	fullMultiply(matrixA, matrixB, matrixC3, multiplySSE, additionSSE);
 	endTime = GetTickCount64();
 
-	resultSSE = endTime - startTime;
+	resultTimeUsingSSE = endTime - startTime;
 
 	if (equals(matrixC2, matrixC3)) {
 		std::cout << "Матрицы равны" << std::endl;
@@ -45,9 +45,12 @@ int main() {
 		std::cout << "Матрицы не равны"<< std::endl;
 	}
 
-	std::cout << "Время с векторизацией: " << resultWithVectrorized << "." << std::endl;
-	std::cout << "Время без векторизации: " << resultNotVectorized << "." << std::endl;
-	std::cout << "Время  SSE: " << resultSSE << "." << std::endl;
+	std::cout << "Время с векторизацией: " << resultTimeWithVectorization << "." << std::endl;
+	std::cout << "Время без векторизации: " << resultTimeWithoutVectorization << "." << std::endl;
+	std::cout << "Время  SSE: " << resultTimeUsingSSE << "." << std::endl;
+
+	std::cout << "Ускорение с автоматической векторизацией: " << (double)resultTimeWithoutVectorization / resultTimeWithVectorization << std::endl;
+	std::cout << "Ускорение с SSE: " << (double)resultTimeUsingSSE / resultTimeWithoutVectorization << std::endl;
 
 	destroy(matrixA, L, M, l, m);
 	destroy(matrixB, M, N, m, n);

@@ -2,21 +2,22 @@
 #include <stdlib.h>
 #include <time.h>
 #include <emmintrin.h>
+#include <immintrin.h>
 #include <Windows.h>
 #include <iostream>
 
-#define L 500
-#define M 500
-#define N 500
+#define L 200
+#define M 200
+#define N 200
 
-#define l 4
-#define m 4
-#define n 4
+#define l 16
+#define m 16
+#define n 16
 
 typedef float T;
 
 
-// веделение памяти
+// выделение памяти 
 T**** allocation(int H, int W, int h, int w);
 
 // заполнение матрицы
@@ -29,7 +30,10 @@ T** multiply(T** matrixA, T** matrixB, T** matrixC);
 T** multiplyNotVectorized(T** matrixA, T** matrixB, T** matrixC);
 
 // хардкор перемножение
-T** multiplySSE(T** matrixA, T** matrixB, T** matrixC);
+float** multiplySSE(float** matrixA, float** matrixB, float** matrixC);
+
+// хардкор перемножение 
+double** multiplySSE(double** matrixA, double** matrixB, double** matrixC);
 
 // сложение c автоматической векторизацией
 T** addition(T** matrixA, T** matrixB);
@@ -38,7 +42,10 @@ T** addition(T** matrixA, T** matrixB);
 T** additionNotVectorized(T** matrixA, T** matrixB);
 
 // хардкор сложение
-T** additionSSE(T** matrixA, T** matrixB);
+float** additionSSE(float** matrixA, float** matrixB);
+
+// хардкор сложение
+double** additionSSE(double** matrixA, double** matrixB);
 
 // полное перемножение
 T**** fullMultiply(T**** matrixA, T**** matrixB, T**** matrixC , T** (*mul)(T**, T**, T**), T** (*add)(T**, T**));

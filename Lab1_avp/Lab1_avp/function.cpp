@@ -1,6 +1,6 @@
 #include "function.h"
 
-// веделение памяти
+// выделение памяти
 T**** allocation(int H, int W, int h, int w) {
 	T**** matrix = nullptr;
 
@@ -89,14 +89,14 @@ T** multiplyNotVectorized(T** matrixA, T** matrixB, T** matrixC) {
 }
 
 // хардкор перемножение
-T** multiplySSE(T** matrixA, T** matrixB, T** matrixC){
-	T tempA = 0;
-	T* tempB = nullptr;
-	T* tempC = nullptr;
+float** multiplySSE(float** matrixA, float** matrixB, float** matrixC){
+	float tempA = 0;
+	float* tempB = nullptr;
+	float* tempC = nullptr;
 
-	__m128 reg0;
-	__m128 reg1;
-	__m128 reg2;
+	__m256 reg0;
+	__m256 reg1;
+	__m256 reg2;
 
 
 	for (int i = 0; i < l; i++)
@@ -107,13 +107,44 @@ T** multiplySSE(T** matrixA, T** matrixB, T** matrixC){
 		{
 			tempA = matrixA[i][j];
 			tempB = matrixB[j];
-			reg1 = _mm_set1_ps(tempA);
+			reg1 = _mm256_set1_ps(tempA);
+
+			for (int offset = 0; offset < n; offset += 8) {
+				reg0 = _mm256_load_ps(tempC+offset);
+				reg2 = _mm256_load_ps(tempB+offset);
+				reg0 = _mm256_add_ps(reg0, _mm256_mul_ps(reg1, reg2));
+				_mm256_store_ps(tempC+offset, reg0);
+			}
+		}
+	}
+	return matrixC;
+}
+
+double** multiplySSE(double** matrixA, double** matrixB, double** matrixC) {
+	double tempA = 0;
+	double* tempB = nullptr;
+	double* tempC = nullptr;
+
+	__m256d reg0;
+	__m256d reg1;
+	__m256d reg2;
+
+
+	for (int i = 0; i < l; i++)
+	{
+		tempC = matrixC[i];
+
+		for (int j = 0; j < m; j++)
+		{
+			tempA = matrixA[i][j];
+			tempB = matrixB[j];
+			reg1 = _mm256_set1_pd(tempA);
 
 			for (int k = 0; k < n; k += 4) {
-				reg0 = _mm_load_ps(tempC+k);
-				reg2 = _mm_load_ps(tempB+k);
-				reg0 = _mm_add_ps(reg0, _mm_mul_ps(reg1, reg2));
-				_mm_store_ps(tempC+k, reg0);
+				reg0 = _mm256_load_pd(tempC + k);
+				reg2 = _mm256_load_pd(tempB + k);
+				reg0 = _mm256_add_pd(reg0, _mm256_mul_pd(reg1, reg2));
+				_mm256_store_pd(tempC + k, reg0);
 			}
 		}
 	}
@@ -121,25 +152,50 @@ T** multiplySSE(T** matrixA, T** matrixB, T** matrixC){
 }
 
 // хардкор сложение
-T** additionSSE(T** matrixA, T** matrixB) {
+float** additionSSE(float** matrixA, float** matrixB) {
 	
-	T* tempA = nullptr;
-	T* tempB = nullptr;
+	float* tempA = nullptr;
+	float* tempB = nullptr;
 
-	__m128 reg0;
-	__m128 reg1;
+	__m256 reg0;
+	__m256 reg1;
 
 
 	for (int i = 0; i < l; i++)
 	{
 		tempA = matrixA[i];
 		tempB = matrixB[i];
-		for (int j = 0; j < n; j+=4)
+		for (int j = 0; j < n; j+=8)
 		{
-			reg0 = _mm_load_ps(tempA+j);
-			reg1 = _mm_load_ps(tempB+j);
-			reg0 = _mm_add_ps(reg0, reg1);
-			_mm_store_ps(tempA + j, reg0);
+			reg0 = _mm256_load_ps(tempA+j);
+			reg1 = _mm256_load_ps(tempB+j);
+			reg0 = _mm256_add_ps(reg0, reg1);
+			_mm256_store_ps(tempA + j, reg0);
+		}
+	}
+	return matrixA;
+}
+
+// хардкор сложение
+double** additionSSE(double** matrixA, double** matrixB) {
+
+	double* tempA = nullptr;
+	double* tempB = nullptr;
+
+	__m256d reg0;
+	__m256d reg1;
+
+
+	for (int i = 0; i < l; i++)
+	{
+		tempA = matrixA[i];
+		tempB = matrixB[i];
+		for (int j = 0; j < n; j += 4)
+		{
+			reg0 = _mm256_load_pd(tempA + j);
+			reg1 = _mm256_load_pd(tempB + j);
+			reg0 = _mm256_add_pd(reg0, reg1);
+			_mm256_store_pd(tempA + j, reg0);
 		}
 	}
 	return matrixA;
